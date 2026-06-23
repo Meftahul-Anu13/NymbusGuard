@@ -108,7 +108,22 @@ const db = {
   },
 
   getSettings: () => {
-    return readDb().settings;
+    const fileSettings = readDb().settings || {};
+    return {
+      groqApiKey: process.env.GROQ_API_KEY || fileSettings.groqApiKey || '',
+      geminiApiKey: process.env.GEMINI_API_KEY || fileSettings.geminiApiKey || '',
+      openaiApiKey: process.env.OPENAI_API_KEY || fileSettings.openaiApiKey || '',
+      hubspotAccessToken: process.env.HUBSPOT_ACCESS_TOKEN || fileSettings.hubspotAccessToken || '',
+      resendApiKey: process.env.RESEND_API_KEY || fileSettings.resendApiKey || '',
+      elevenlabsApiKey: process.env.ELEVENLABS_API_KEY || fileSettings.elevenlabsApiKey || '',
+      twilioSid: process.env.TWILIO_SID || fileSettings.twilioSid || '',
+      twilioToken: process.env.TWILIO_TOKEN || fileSettings.twilioToken || '',
+      twilioPhone: process.env.TWILIO_PHONE || fileSettings.twilioPhone || '',
+      testRecipientPhone: process.env.TEST_RECIPIENT_PHONE || fileSettings.testRecipientPhone || '',
+      discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL || fileSettings.discordWebhookUrl || '',
+      telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || fileSettings.telegramBotToken || '',
+      telegramChatId: process.env.TELEGRAM_CHAT_ID || fileSettings.telegramChatId || ''
+    };
   },
 
   updateSettings: (settings) => {
