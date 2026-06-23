@@ -1035,13 +1035,44 @@ You MUST respond strictly in valid JSON format.`;
 
 // 1. Settings Configuration
 app.get('/api/settings', (req, res) => {
-  res.json(db.getSettings());
+  const rawSettings = db.getSettings();
+  const maskedSettings = { ...rawSettings };
+  const sensitiveKeys = [
+    'groqApiKey', 'geminiApiKey', 'openaiApiKey', 
+    'hubspotAccessToken', 'resendApiKey', 'elevenlabsApiKey', 
+    'twilioToken', 'telegramBotToken', 'discordWebhookUrl'
+  ];
+  for (const key of sensitiveKeys) {
+    if (maskedSettings[key]) {
+      maskedSettings[key] = '••••••••••••••••';
+    }
+  }
+  res.json(maskedSettings);
 });
 
 app.post('/api/settings', (req, res) => {
-  const updated = db.updateSettings(req.body);
+  const currentSettings = db.getSettings();
+  const updatedSettings = { ...req.body };
+  const sensitiveKeys = [
+    'groqApiKey', 'geminiApiKey', 'openaiApiKey', 
+    'hubspotAccessToken', 'resendApiKey', 'elevenlabsApiKey', 
+    'twilioToken', 'telegramBotToken', 'discordWebhookUrl'
+  ];
+  for (const key of sensitiveKeys) {
+    if (updatedSettings[key] === '••••••••••••••••') {
+      updatedSettings[key] = currentSettings[key] || '';
+    }
+  }
+  const updated = db.updateSettings(updatedSettings);
   db.addLog('info', 'Settings', 'API configuration settings updated successfully.');
-  res.json(updated);
+  
+  const responseSettings = { ...updated };
+  for (const key of sensitiveKeys) {
+    if (responseSettings[key]) {
+      responseSettings[key] = '••••••••••••••••';
+    }
+  }
+  res.json(responseSettings);
 });
 
 // 2. Fetch Leads
