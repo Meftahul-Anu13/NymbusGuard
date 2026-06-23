@@ -17,49 +17,7 @@ NymbusGuard automates the entire qualification and personalization lifecycle in 
 6. **Voiceover Synthesis**: Synthesizes a high-fidelity personalized voiceover to narrate the video preview.
 7. **CRM Sync & Multi-Channel Outreach**: Synces qualified contacts to HubSpot and schedules personalized touchpoints via Resend (Email) and Twilio (SMS/WhatsApp).
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Prospect as Lead/Prospect
-    participant Web as Intake Form / Scraper
-    participant Pipeline as Pipeline Orchestrator
-    participant AI as AI Qualification Agent
-    participant TTS as ElevenLabs TTS
-    participant CRM as HubSpot CRM
-    participant Mail as Resend / Twilio Outreach
-
-    Prospect->>Web: Submits Demo / Exposure Request
-    Web->>Pipeline: Spawns Asynchronous Processing Queue
-    activate Pipeline
-    Pipeline->>Web: Scrapes Homepage (Axios/Cheerio)
-    Web-->>Pipeline: Returns Title, Description, Meta & Keywords
-    Pipeline->>AI: Requests ICP Scoring & Verification
-    activate AI
-    
-    alt Needs Clarification (Vague input)
-        AI-->>Pipeline: Needs Clarification + Clarifying Question
-        Pipeline->>Prospect: Sends Clarifying Email Touchpoint
-        Note over Prospect, Pipeline: Pipeline PAUSES for user answer
-        Prospect->>Pipeline: Submits clarification reply
-        Pipeline->>AI: Re-evaluates updated profile
-    end
-
-    alt Cold Lead (Disqualified)
-        AI-->>Pipeline: Cold ICP Score (<40)
-        Pipeline->>Pipeline: Marks Disqualified, Terminates Pipeline
-    else Hot/Warm Lead (Qualified)
-        AI-->>Pipeline: Hot/Warm Score (>=40) + pain_point
-        deactivate AI
-        Pipeline->>AI: Generates 30-45s personalized Video Script
-        AI-->>Pipeline: Returns customized Script JSON
-        Pipeline->>TTS: Calls ElevenLabs Voice Synthesis (Rachel Voice)
-        TTS-->>Pipeline: Caches MP3 voice file locally
-        Pipeline->>CRM: Creates/Updates HubSpot Contact with ICP scoring notes
-        Pipeline->>Mail: Sends outreach email with video link & schedules Twilio SMS
-    end
-    
-    deactivate Pipeline
-```
+![System Architecture Workflow](sequence_diagram.png)
 
 ---
 
